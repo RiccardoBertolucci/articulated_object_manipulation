@@ -1,0 +1,247 @@
+#!/usr/bin/env python
+
+import argparse
+
+import rospy
+import os
+import baxter_interface
+import baxter_external_devices
+from baxter_interface import CHECK_VERSION
+
+a = 1
+b = 2
+c = 3
+
+current_configuration = a
+
+def chose_configuration():
+    # initialize interfaces
+    print("Getting robot state... ")
+    rs = baxter_interface.RobotEnable(CHECK_VERSION)
+    init_state = rs.state().enabled
+    left = baxter_interface.Gripper('left', CHECK_VERSION)
+    right = baxter_interface.Gripper('right', CHECK_VERSION)
+
+    def clean_shutdown():
+        if not init_state:
+            print("Disabling robot...")
+            rs.disable()
+        print("Exiting manipulations script.")
+    rospy.on_shutdown(clean_shutdown)
+
+    def move_left_flat_up():
+    	global current_configuration
+        current_configuration=a
+    def move_left_up_flat():
+    	global current_configuration
+        current_configuration=b
+    def move_left_flat_down():
+    	global current_configuration
+        current_configuration=c  
+    def move_left_down_flat():
+    	global current_configuration
+        current_configuration=c 
+    def move_right_flat_up():
+    	global current_configuration
+        current_configuration=a
+    def move_right_up_flat():
+    	global current_configuration
+        current_configuration=b
+    def move_right_flat_down():
+    	global current_configuration
+        current_configuration=c  
+    def move_right_down_flat():
+    	global current_configuration
+        current_configuration=c      
+
+    configurations_from_a = {
+	#   key: (function, args, description)
+		'b': (move_left_flat_up, [], "move to configuration: b"),
+		'c': (move_left_flat_down, [], "move to configuration: c"),
+		'd': (move_right_flat_up, [], "move to configuration: d"),
+		'e': (move_right_flat_down, [], "move to configuration: e"),
+	}
+    configurations_from_b = {
+	#   key: (function, args, description)
+		'a': (move_left_up_flat, [], "move to configuration: a"),
+		'f': (move_right_flat_up, [], "move to configuration: f"),
+		'h': (move_right_flat_down, [], "move to configuration: h"),
+	}
+    configurations_from_c = {
+	#   key: (function, args, description)
+		'a': (move_left_down_flat, [], "move to configuration: a"),
+		'g': (move_right_flat_down, [], "move to configuration: g"),
+		'i': (move_right_flat_up, [], "move to configuration: i"),
+	}
+    configurations_from_d = {
+	#   key: (function, args, description)
+		'a': (move_right_up_flat, [], "move to configuration: a"),
+		'f': (move_left_flat_up, [], "move to configuration: f"),
+		'i': (move_left_flat_down, [], "move to configuration: i"),
+	}
+    configurations_from_e = {
+	#   key: (function, args, description)
+		'a': (move_right_down_flat, [], "move to configuration: a"),
+		'g': (move_left_flat_down, [], "move to configuration: g"),
+		'h': (move_left_flat_up, [], "move to configuration: h"),
+	}
+    configurations_from_f = {
+	#   key: (function, args, description)
+		'b': (move_right_up_flat, [], "move to configuration: b"),
+		'd': (move_left_up_flat, [], "move to configuration: d"),
+	}	
+    configurations_from_g = {
+	#   key: (function, args, description)
+		'c': (move_right_down_flat, [], "move to configuration: c"),
+		'e': (move_left_down_flat, [], "move to configuration: e"),
+	}	
+    configurations_from_h = {
+	#   key: (function, args, description)
+		'b': (move_right_down_flat, [], "move to configuration: b"),
+		'e': (move_left_up_flat, [], "move to configuration: e"),
+	}	
+    configurations_from_i = {
+	#   key: (function, args, description)
+		'c': (move_right_up_flat, [], "move to configuration: c"),
+		'd': (move_left_down_flat, [], "move to configuration: d"),
+	}	
+    
+    done = False
+    print("Enabling robot... ")
+    rs.enable()
+    print("Press ? for help, Esc to quit.")
+    while not done and not rospy.is_shutdown():
+        first_input = baxter_external_devices.getch()
+        if first_input:
+        	if current_configuration == a:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_a:
+		            cmd = configurations_from_a[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_a.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))
+        	elif current_configuration == b:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_b:
+		            cmd = configurations_from_b[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_b.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))
+        	elif current_configuration == c:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_c:
+		            cmd = configurations_from_c[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_c.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))
+        	elif current_configuration == d:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_d:
+		            cmd = configurations_from_d[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_d.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))
+        	elif current_configuration == e:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_e:
+		            cmd = configurations_from_e[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_e.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))	
+        	elif current_configuration == f:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_f:
+		            cmd = configurations_from_f[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_f.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))
+        	elif current_configuration == g:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_g:
+		            cmd = configurations_from_g[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_g.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))	
+        	elif current_configuration == h:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_h:
+		            cmd = configurations_from_h[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_h.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))		
+        	elif current_configuration == i:
+		        if first_input in ['\x1b', '\x03']:
+		            done = True
+		        elif first_input in configurations_from_i:
+		            cmd = configurations_from_i[first_input]
+		            cmd[0](*cmd[1])
+		            print("The goal configuration is: %s" % (cmd[2],))
+		        else:
+		            print("key bindings: ")
+		            print("  Esc: Quit")
+		            print("  ?: Help")
+		            for key, val in sorted(configurations_from_i.items(), key=lambda x: x[1][2]):
+		                print("  %s: %s" % (key, val[2]))		                                	                		                	                		       
+    # force shutdown call if caught by key handler
+    rospy.signal_shutdown("Manipulations finished.")
+
+
+def main():
+    print("Initializing node... ")
+    rospy.init_node("prova")
+    chose_configuration()
+
+if __name__ == '__main__':
+	try:
+		main()
+	except rospy.ROSInterruptException:
+		pass
+
